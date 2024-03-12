@@ -20,14 +20,15 @@ namespace marron_driver
 MotorCommandSenderComponent::MotorCommandSenderComponent(const rclcpp::NodeOptions & options)
 : rclcpp::Node("marron_kvh1750_driver_component", options)
 {
-  //   serial_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
-  //     "serial_read", rclcpp::QoS{100},
-  //     [this](const std_msgs::msg::UInt8MultiArray & msg) { serial_callback(msg); });
+  serial_pub_ = create_publisher<std_msgs::msg::UInt8MultiArray>("serial_write", rclcpp::QoS{100});
+  command_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
+    "command", rclcpp::QoS{100},
+    [this](const std_msgs::msg::UInt8MultiArray & msg) { command_callback(msg); });
 }
 
 MotorCommandSenderComponent::~MotorCommandSenderComponent() {}
 
-void MotorCommandSenderComponent::serial_callback(const std_msgs::msg::UInt8MultiArray & msg) {}
+void MotorCommandSenderComponent::command_callback(const std_msgs::msg::UInt8MultiArray & msg) {}
 }  // namespace marron_driver
 
 RCLCPP_COMPONENTS_REGISTER_NODE(marron_driver::MotorCommandSenderComponent)

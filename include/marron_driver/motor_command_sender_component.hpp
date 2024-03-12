@@ -30,7 +30,8 @@ public:
   ~MotorCommandSenderComponent();
 
 private:
-  void serial_callback(const std_msgs::msg::UInt8MultiArray & msg);
+  void command_callback(const std_msgs::msg::UInt8MultiArray & msg);
+  rclcpp::Publisher<std_msgs::msg::UInt8MultiArray>::SharedPtr serial_pub_;
   rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr command_sub_;
 };
 }  // namespace marron_driver
