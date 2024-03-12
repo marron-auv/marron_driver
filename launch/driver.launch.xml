@@ -1,0 +1,6 @@
+<launch>
+    <node_container pkg="rclcpp_components" exec="component_container_mt" name="components" namespace="driver" args="">
+        <composable_node pkg="marron_driver" plugin="marron_driver::KVH1750DriverComponent" name="kvh1750_driver" namespace="driver">
+        </composable_node>
+    </node_container>
+</launch>
