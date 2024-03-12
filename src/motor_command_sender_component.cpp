@@ -43,10 +43,10 @@ std_msgs::msg::UInt8MultiArray MotorCommandSenderComponent::to_ascii(const std::
 
 void MotorCommandSenderComponent::command_callback(const std_msgs::msg::UInt8MultiArray & msg)
 {
-  if (msg.layout.dim.size() != 1 || msg.layout.dim[0].size != 8 || msg.layout.dim[0].stride != 8) {
-    RCLCPP_ERROR_STREAM(get_logger(), "Size of the array should be 8");
-    return;
-  }
+  // if (msg.layout.dim.size() != 1 || msg.layout.dim[0].size != 8 || msg.layout.dim[0].stride != 8) {
+  //   RCLCPP_ERROR_STREAM(get_logger(), "Size of the array should be 8");
+  //   return;
+  // }
   if (msg.data.size() != 8) {
     RCLCPP_ERROR_STREAM(get_logger(), "Size of the data should be 8");
     return;
@@ -54,12 +54,13 @@ void MotorCommandSenderComponent::command_callback(const std_msgs::msg::UInt8Mul
   std::string command_string = "";
   for (int i = 0; i <= 7; i++) {
     if (i != 7) {
-      command_string = std::to_string(i) + "," + std::to_string(msg.data[i]) + ",";
+      command_string = command_string + std::to_string(i) + "," + std::to_string(msg.data[i]) + ",";
     } else {
-      command_string = std::to_string(i) + "," + std::to_string(msg.data[i]);
+      command_string = command_string + std::to_string(i) + "," + std::to_string(msg.data[i]);
     }
   }
   RCLCPP_INFO_STREAM(get_logger(), "Command string " << command_string);
+  serial_pub_->publish(to_ascii(command_string));
 }
 }  // namespace marron_driver
 
