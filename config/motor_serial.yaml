@@ -1,6 +1,6 @@
 /**:
   ros__parameters:
-    device_name: /dev/imu
+    device_name: /dev/motor_teensy
     baud_rate: 9600
     flow_control: none
     parity: none

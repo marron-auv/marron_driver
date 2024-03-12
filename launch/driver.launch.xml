@@ -8,5 +8,14 @@
             <param name="use_intra_process_comms" value="true"/>
             <param from="$(find-pkg-share marron_driver)/config/kvh1750_serial.yaml"/>
         </composable_node>
+
+        <composable_node pkg="marron_driver" plugin="marron_driver::MotorCommandSenderComponent" name="motor_command_sender" namespace="driver/motor">
+            <param name="use_intra_process_comms" value="true"/>
+        </composable_node>
+
+        <composable_node pkg="marron_driver" plugin="drivers::serial_driver::SerialBridgeComponent" name="serial_driver" namespace="driver/imu">
+            <param name="use_intra_process_comms" value="true"/>
+            <param from="$(find-pkg-share marron_driver)/config/kvh1750_serial.yaml"/>
+        </composable_node>
     </node_container>
 </launch>
