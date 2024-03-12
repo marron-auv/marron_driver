@@ -20,9 +20,14 @@ namespace marron_driver
 KVH1750DriverComponent::KVH1750DriverComponent(const rclcpp::NodeOptions & options)
 : rclcpp::Node("marron_kvh1750_driver_component", options)
 {
+  serial_sub_ = create_subscription<std_msgs::msg::UInt8MultiArray>(
+    "serial_read", rclcpp::QoS{100},
+    [this](const std_msgs::msg::UInt8MultiArray & msg) { serial_callback(msg); });
 }
 
 KVH1750DriverComponent::~KVH1750DriverComponent() {}
+
+void KVH1750DriverComponent::serial_callback(const std_msgs::msg::UInt8MultiArray & msg) {}
 }  // namespace marron_driver
 
 RCLCPP_COMPONENTS_REGISTER_NODE(marron_driver::KVH1750DriverComponent)

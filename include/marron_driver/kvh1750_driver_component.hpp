@@ -16,6 +16,7 @@
 #define MARRON_DRIVER__DRIVER_COMPONENT_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/u_int8_multi_array.hpp>
 
 #include "visibility_control.h"
 
@@ -27,6 +28,10 @@ public:
   MARRON_DRIVER_PUBLIC
   explicit KVH1750DriverComponent(const rclcpp::NodeOptions & options);
   ~KVH1750DriverComponent();
+
+private:
+  void serial_callback(const std_msgs::msg::UInt8MultiArray & msg);
+  rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr serial_sub_;
 };
 }  // namespace marron_driver
 
