@@ -1,10 +1,10 @@
 <launch>
     <node_container pkg="rclcpp_components" exec="component_container_mt" name="components" namespace="driver" args="">
-        <composable_node pkg="marron_driver" plugin="marron_driver::KVH1750DriverComponent" name="kvh1750_driver" namespace="driver">
+        <composable_node pkg="marron_driver" plugin="marron_driver::KVH1750DriverComponent" name="kvh1750_driver" namespace="driver/imu">
             <param name="use_intra_process_comms" value="true"/>
         </composable_node>
 
-        <composable_node pkg="marron_driver" plugin="drivers::serial_driver::SerialBridgeComponent" name="serial_driver" namespace="driver">
+        <composable_node pkg="marron_driver" plugin="drivers::serial_driver::SerialBridgeComponent" name="serial_driver" namespace="driver/imu">
             <param name="use_intra_process_comms" value="true"/>
             <param from="$(find-pkg-share marron_driver)/config/kvh1750_serial.yaml"/>
         </composable_node>

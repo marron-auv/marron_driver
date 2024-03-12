@@ -39,24 +39,16 @@ public:
   /// \param[in] options Options for the node
   explicit SerialBridgeComponent(const rclcpp::NodeOptions & options);
 
-  /// \brief Constructor which accepts IoContext
-  /// \param[in] options Options for the node
-  /// \param[in] ctx A shared IoContext
-  SerialBridgeComponent(const rclcpp::NodeOptions & options, const IoContext & ctx);
-
   /// \brief Destructor - required to manage owned IoContext
   ~SerialBridgeComponent();
 
-  void on_configure();
-  void on_activate();
-
+private:
+  void init_port();
+  void configure_topics();
   /// \brief Callback for sending a raw serial message
   void subscriber_callback(const UInt8MultiArray::SharedPtr msg);
-
   /// \breif Callback for when serial data are received
   void receive_callback(const std::vector<uint8_t> & buffer, const size_t & bytes_transferred);
-
-private:
   void get_params();
 
   std::unique_ptr<IoContext> m_owned_ctx{};
@@ -65,6 +57,8 @@ private:
   std::unique_ptr<SerialDriver> m_serial_driver;
   rclcpp::Publisher<UInt8MultiArray>::SharedPtr m_publisher;
   rclcpp::Subscription<UInt8MultiArray>::SharedPtr m_subscriber;
+  std::thread port_initialize_thread;
+  std::exception_ptr port_initialize_exception;
 };  // class SerialBridgeComponent
 
 }  // namespace serial_driver

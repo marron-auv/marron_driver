@@ -28,15 +28,8 @@ SerialBridgeComponent::SerialBridgeComponent(const rclcpp::NodeOptions & options
   m_serial_driver{new SerialDriver(*m_owned_ctx)}
 {
   get_params();
-  on_configure();
-}
-
-SerialBridgeComponent::SerialBridgeComponent(
-  const rclcpp::NodeOptions & options, const IoContext & ctx)
-: rclcpp::Node("serial_bridge_node", options), m_serial_driver{new SerialDriver(ctx)}
-{
-  get_params();
-  on_configure();
+  configure_topics();
+  init_port();
 }
 
 SerialBridgeComponent::~SerialBridgeComponent()
@@ -44,22 +37,32 @@ SerialBridgeComponent::~SerialBridgeComponent()
   if (m_owned_ctx) {
     m_owned_ctx->waitForExit();
   }
-  m_serial_driver->port()->close();
+  if (m_serial_driver->port()->is_open()) {
+    m_serial_driver->port()->close();
+  }
   m_publisher.reset();
   m_subscriber.reset();
 }
 
-void SerialBridgeComponent::on_configure()
+void SerialBridgeComponent::init_port()
+{
+  try {
+    m_serial_driver->init_port(m_device_name, *m_device_config);
+    if (!m_serial_driver->port()->is_open()) {
+      m_serial_driver->port()->open();
+      m_serial_driver->port()->async_receive(std::bind(
+        &SerialBridgeComponent::receive_callback, this, std::placeholders::_1,
+        std::placeholders::_2));
+    }
+  } catch (...) {
+    RCLCPP_ERROR_STREAM(get_logger(), "Failed to open port.");
+  }
+}
+
+void SerialBridgeComponent::configure_topics()
 {
   // Create Publisher
   m_publisher = this->create_publisher<UInt8MultiArray>("serial_read", rclcpp::QoS{100});
-  m_serial_driver->init_port(m_device_name, *m_device_config);
-  if (!m_serial_driver->port()->is_open()) {
-    m_serial_driver->port()->open();
-    m_serial_driver->port()->async_receive(std::bind(
-      &SerialBridgeComponent::receive_callback, this, std::placeholders::_1,
-      std::placeholders::_2));
-  }
   // Create Subscriber
   auto qos = rclcpp::QoS(rclcpp::KeepLast(32)).best_effort();
   auto callback =
@@ -156,7 +159,11 @@ void SerialBridgeComponent::subscriber_callback(const UInt8MultiArray::SharedPtr
 {
   std::vector<uint8_t> out;
   drivers::common::from_msg(msg, out);
-  m_serial_driver->port()->async_send(out);
+  if (m_serial_driver) {
+    m_serial_driver->port()->async_send(out);
+  } else {
+    RCLCPP_ERROR_STREAM(get_logger(), "Port is not initialized, skip sending serial");
+  }
 }
 
 }  // namespace serial_driver
