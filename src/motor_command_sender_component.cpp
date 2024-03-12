@@ -28,7 +28,39 @@ MotorCommandSenderComponent::MotorCommandSenderComponent(const rclcpp::NodeOptio
 
 MotorCommandSenderComponent::~MotorCommandSenderComponent() {}
 
-void MotorCommandSenderComponent::command_callback(const std_msgs::msg::UInt8MultiArray & msg) {}
+std_msgs::msg::UInt8MultiArray MotorCommandSenderComponent::to_ascii(const std::string & msg)
+{
+  std_msgs::msg::UInt8MultiArray ascii;
+  ascii.layout.dim.push_back(std_msgs::build<std_msgs::msg::MultiArrayDimension>()
+                               .label("ascii")
+                               .size(msg.length())
+                               .stride(msg.length()));
+  for (size_t i = 0; i <= msg.length(); i++) {
+    ascii.data.push_back(static_cast<int>(msg[i]));
+  }
+  return ascii;
+}
+
+void MotorCommandSenderComponent::command_callback(const std_msgs::msg::UInt8MultiArray & msg)
+{
+  if (msg.layout.dim.size() != 1 || msg.layout.dim[0].size != 8 || msg.layout.dim[0].stride != 8) {
+    RCLCPP_ERROR_STREAM(get_logger(), "Size of the array should be 8");
+    return;
+  }
+  if (msg.data.size() != 8) {
+    RCLCPP_ERROR_STREAM(get_logger(), "Size of the data should be 8");
+    return;
+  }
+  std::string command_string = "";
+  for (int i = 0; i <= 7; i++) {
+    if (i != 7) {
+      command_string = std::to_string(i) + "," + std::to_string(msg.data[i]) + ",";
+    } else {
+      command_string = std::to_string(i) + "," + std::to_string(msg.data[i]);
+    }
+  }
+  RCLCPP_INFO_STREAM(get_logger(), "Command string " << command_string);
+}
 }  // namespace marron_driver
 
 RCLCPP_COMPONENTS_REGISTER_NODE(marron_driver::MotorCommandSenderComponent)

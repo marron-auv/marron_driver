@@ -16,6 +16,7 @@
 #define MARRON_DRIVER__MOTOR_COMMAND_SENDER_COMPONENT_HPP_
 
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/multi_array_dimension.hpp>
 #include <std_msgs/msg/u_int8_multi_array.hpp>
 
 #include "visibility_control.h"
@@ -31,6 +32,7 @@ public:
 
 private:
   void command_callback(const std_msgs::msg::UInt8MultiArray & msg);
+  std_msgs::msg::UInt8MultiArray to_ascii(const std::string & msg);
   rclcpp::Publisher<std_msgs::msg::UInt8MultiArray>::SharedPtr serial_pub_;
   rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr command_sub_;
 };
