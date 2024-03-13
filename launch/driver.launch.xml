@@ -18,8 +18,9 @@
             <param from="$(find-pkg-share marron_driver)/config/kvh1750_serial.yaml"/>
         </composable_node>
 
-        <composable_node pkg="usb_camera_driver" plugin="usb_camera_driver::CameraDriver" name="front_camera" namespace="driver/camera">
+        <composable_node pkg="usb_camera_driver" plugin="usb_cam::UsbCamNode" name="front_camera" namespace="driver/camera">
             <param name="use_intra_process_comms" value="true"/>
+            <param from="$(find-pkg-share marron_driver)/config/front_camera.yaml"/>
         </composable_node>
     </node_container>
 </launch>

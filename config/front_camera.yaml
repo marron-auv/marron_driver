@@ -1,0 +1,3 @@
+/**:
+  ros__parameters:
+    video_device: /dev/front_camera
